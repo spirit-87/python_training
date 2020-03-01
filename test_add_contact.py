@@ -18,6 +18,7 @@ class TestAddContact(unittest.TestCase):
         self.open_add_new_page(wd)
         self.create_contact(wd, Contact("fn", "mn", "ln", "nn", "t", "c", "address", "5", "6", "7", "8", "e1", "e2", "e3",
                             "www", "31", "May", "1234", "3", "July", "5678", "address", "6", "test"))
+        self.return_to_home_page(wd)
         self.logout(wd)
 
     def create_contact(self, wd, contact):
@@ -111,6 +112,9 @@ class TestAddContact(unittest.TestCase):
 
     def logout(self, wd):
         wd.find_element_by_link_text("Logout").click()
+
+    def return_to_home_page(self, wd):
+        wd.find_element_by_link_text("home").click()
 
     def login(self, wd, username, password):
         wd.find_element_by_name("user").clear()
