@@ -5,14 +5,13 @@ from application_c import Application_c
 
 
 @pytest.fixture
-def app(request):
+def app_c(request):
     fixture = Application_c()
-    request.addfinalyzer(fixture.destroy)  # fixture destroy
+    request.addfinalizer(fixture.destroy)  # fixture destroy
     return fixture
 
-
-def test_add_contact(app):
-    app.login("admin", "secret")
-    app.create_contact(Contact("fn", "mn", "ln", "nn", "t", "c", "address", "5", "6", "7", "8", "e1", "e2", "e3",
+def test_add_contact(app_c):
+    app_c.login("admin", "secret")
+    app_c.create_contact(Contact("fn", "mn", "ln", "nn", "t", "c", "address", "5", "6", "7", "8", "e1", "e2", "e3",
                                "www", "31", "May", "1234", "3", "July", "5678", "address", "6", "test"))
-    app.logout()
+    app_c.logout()
