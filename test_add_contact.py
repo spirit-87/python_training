@@ -2,7 +2,7 @@
 import pytest
 from contact import Contact
 from application_c import Application_c
-
+   
 
 @pytest.fixture
 def app_c(request):

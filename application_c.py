@@ -2,7 +2,6 @@
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import Select
 
-
 class Application_c:
 
     def __init__(self):
