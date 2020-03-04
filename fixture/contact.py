@@ -13,7 +13,28 @@ class ContactHelper:
     def create(self, contact):
         wd = self.app.wd
         self.open_newcontact_page()
-        # fill in names of new contact
+        # fill in contact form
+        self.change_contact_info(contact)
+         # submit contact creation
+        wd.find_element_by_xpath("(//input[@name='submit'])[2]").click()
+        self.app.return_to_home_page()
+
+
+    def delete_first_contact(self):
+        wd = self.app.wd
+        # select first contact = click first checkbox
+        wd.find_element_by_name("selected[]").click()
+        # find_element_by_xpath("//input[@id='4']").click()
+        # submit contact deletion
+        wd.find_element_by_xpath("//input[@value='Delete']").click()
+        # accept dialog window
+        wd.switch_to_alert().accept()
+        self.app.return_to_home_page()
+
+    def change_contact_info(self,contact):
+        wd = self.app.wd
+
+        # fill in names of contact
         wd.find_element_by_name("firstname").click()
         wd.find_element_by_name("firstname").clear()
         wd.find_element_by_name("firstname").send_keys(contact.firstname)
@@ -95,8 +116,13 @@ class ContactHelper:
         wd.find_element_by_name("notes").clear()
         wd.find_element_by_name("notes").send_keys(contact.notes2)
 
-        # submit contact creation
-        wd.find_element_by_xpath("(//input[@name='submit'])[2]").click()
+
+    def edit_first_contact(self,contact):
+        wd = self.app.wd
+        # init contact edition of first edit link
+        wd.find_element_by_css_selector("img[src='icons/pencil.png']").click()
+        # edit contact
+        self.change_contact_info(contact)
+        # submit contact edition
+        wd.find_element_by_xpath("//input[@value='Update']").click()
         self.app.return_to_home_page()
-
-
