@@ -33,8 +33,9 @@ class ContactHelper:
     def select_first_contact(self):
         wd = self.app.wd
         # select first group = click first checkbox
-        wd.find_element_by_name("selected[]").click()
 
+        if not wd.current_url.endswith("/index.php") > 0:
+            wd.find_element_by_link_text("home").click()
 
     def change_contact_info(self, contact):
         wd = self.app.wd
