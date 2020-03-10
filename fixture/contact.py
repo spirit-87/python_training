@@ -1,4 +1,5 @@
 from selenium.webdriver.support.ui import Select
+from model.contact import Contact
 
 
 class ContactHelper:
@@ -22,6 +23,7 @@ class ContactHelper:
     def delete_first_contact(self):
         wd = self.app.wd
         # select first contact = click first checkbox
+        self.open_contacts_page()
         self.select_first_contact()
         # submit contact deletion
         wd.find_element_by_css_selector("input[value='Delete']").click()
@@ -30,12 +32,17 @@ class ContactHelper:
         self.app.return_to_home_page()
 
 
-    def select_first_contact(self):
+    def open_contacts_page(self):
         wd = self.app.wd
         # select first group = click first checkbox
 
         if not wd.current_url.endswith("/index.php") > 0:
             wd.find_element_by_link_text("home").click()
+
+    def select_first_contact(self):
+        wd = self.app.wd
+        # select first contact = click first checkbox
+        wd.find_element_by_name("selected[]").click()
 
     def change_contact_info(self, contact):
         wd = self.app.wd
@@ -111,5 +118,22 @@ class ContactHelper:
 
     def count(self):
         wd = self.app.wd
-        self.select_first_contact()
+        self.open_contacts_page()
         return len(wd.find_elements_by_name("selected[]"))
+
+    def get_contact_list(self):
+        wd = self.app.wd
+        self.open_contacts_page()
+        contacts = []
+
+        inputs = wd.find_elements_by_css_selector("#maintable .center input")
+        first_names = wd.find_elements_by_css_selector("#maintable td:nth-child(3)")
+        last_names = wd.find_elements_by_css_selector("#maintable td:nth-child(2)")
+
+        for i in range(0,len(inputs)):
+            id = inputs[i].get_attribute("value")
+            first_name = first_names[i].text
+            last_name = last_names[i].text
+            contacts.append(Contact(firstname = first_name, lastname = last_name, id = id))
+
+        return contacts
