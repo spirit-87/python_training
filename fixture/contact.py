@@ -20,6 +20,8 @@ class ContactHelper:
         wd.find_element_by_xpath("(//input[@name='submit'])[2]").click()
         self.app.return_to_home_page()
 
+        self.contact_cashe = None
+
     def delete_first_contact(self):
         wd = self.app.wd
         # select first contact = click first checkbox
@@ -30,6 +32,8 @@ class ContactHelper:
         # accept dialog window
         wd.switch_to_alert().accept()
         self.app.return_to_home_page()
+
+        self.contact_cashe = None
 
 
     def open_contacts_page(self):
@@ -89,6 +93,8 @@ class ContactHelper:
         self.change_field_value("phone2", contact.phone2)
         self.change_field_value("notes", contact.notes2)
 
+        self.contact_cashe = None
+
     def edit_first_contact(self, new_contact_data):
         wd = self.app.wd
         self.select_first_contact_edit()
@@ -121,19 +127,23 @@ class ContactHelper:
         self.open_contacts_page()
         return len(wd.find_elements_by_name("selected[]"))
 
+    contact_cashe = None
+
+
     def get_contact_list(self):
-        wd = self.app.wd
-        self.open_contacts_page()
-        contacts = []
+        if self.contact_cashe is None:
+            wd = self.app.wd
+            self.open_contacts_page()
+            self.contact_cashe = []
 
-        inputs = wd.find_elements_by_css_selector("#maintable .center input")
-        first_names = wd.find_elements_by_css_selector("#maintable td:nth-child(3)")
-        last_names = wd.find_elements_by_css_selector("#maintable td:nth-child(2)")
+            inputs = wd.find_elements_by_css_selector("#maintable .center input")
+            first_names = wd.find_elements_by_css_selector("#maintable td:nth-child(3)")
+            last_names = wd.find_elements_by_css_selector("#maintable td:nth-child(2)")
 
-        for i in range(0,len(inputs)):
-            id = inputs[i].get_attribute("value")
-            first_name = first_names[i].text
-            last_name = last_names[i].text
-            contacts.append(Contact(firstname = first_name, lastname = last_name, id = id))
+            for i in range(0,len(inputs)):
+                id = inputs[i].get_attribute("value")
+                first_name = first_names[i].text
+                last_name = last_names[i].text
+                self.contact_cashe.append(Contact(firstname = first_name, lastname = last_name, id = id))
 
-        return contacts
+        return list(self.contact_cashe)

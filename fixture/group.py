@@ -26,6 +26,8 @@ class GroupHelper:
         wd.find_element_by_name("submit").click()
         self.return_to_groups_page()
 
+        self.group_cashe = None
+
 
     def select_first_group(self):
         wd = self.app.wd
@@ -40,12 +42,16 @@ class GroupHelper:
         wd.find_element_by_name("delete").click()
         self.return_to_groups_page()
 
+        self.group_cashe = None
+
     def change_group_info(self, group):
         wd = self.app.wd
         # fill group form
         self.change_field_value("group_name", group.name)
         self.change_field_value("group_header", group.header)
         self.change_field_value("group_footer", group.footer)
+
+        self.group_cashe = None
 
     def change_field_value(self, field_name, text):
         wd = self.app.wd
@@ -71,13 +77,18 @@ class GroupHelper:
         self.open_groups_page()
         return len(wd.find_elements_by_name("selected[]"))
 
-    def get_group_list(self):
-        wd = self.app.wd
-        self.open_groups_page()
-        groups = []
-        for element in wd.find_elements_by_css_selector("span.group"):
-            text = element.text
-            id = element.find_element_by_name("selected[]").get_attribute("value")
-            groups.append(Group(name = text, id = id))
+    group_cashe = None
 
-        return groups
+    def get_group_list(self):
+        #будем возвращать кеш.значение, если оно доступно
+        #надо проверять, валидно ли значение кеша (в случае изменений в группах, надо обновлят кеш - сброс кеша в методах,
+        # изменяющих список групп)
+        if self.group_cashe is None:
+            wd = self.app.wd
+            self.open_groups_page()
+            self.group_cashe = []
+            for element in wd.find_elements_by_css_selector("span.group"):
+                text = element.text
+                id = element.find_element_by_name("selected[]").get_attribute("value")
+                self.group_cashe.append(Group(name = text, id = id))
+            return list(self.group_cashe)
