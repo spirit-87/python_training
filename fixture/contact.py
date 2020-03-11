@@ -23,10 +23,14 @@ class ContactHelper:
         self.contact_cashe = None
 
     def delete_first_contact(self):
+        self.delete_contact_by_index(0)
+
+
+    def delete_contact_by_index(self,index):
         wd = self.app.wd
         # select first contact = click first checkbox
         self.open_contacts_page()
-        self.select_first_contact()
+        self.select_contact_by_index(index)
         # submit contact deletion
         wd.find_element_by_css_selector("input[value='Delete']").click()
         # accept dialog window
@@ -44,9 +48,12 @@ class ContactHelper:
             wd.find_element_by_link_text("home").click()
 
     def select_first_contact(self):
+        self.select_contact_by_index(0)
+
+    def select_contact_by_index(self, index):
         wd = self.app.wd
         # select first contact = click first checkbox
-        wd.find_element_by_name("selected[]").click()
+        wd.find_elements_by_name("selected[]")[index].click()
 
     def change_contact_info(self, contact):
         wd = self.app.wd
@@ -94,20 +101,27 @@ class ContactHelper:
         self.change_field_value("notes", contact.notes2)
 
         self.contact_cashe = None
-
     def edit_first_contact(self, new_contact_data):
+        self.edit_contact_by_index(0)
+
+    def edit_contact_by_index(self, index, new_contact_data):
         wd = self.app.wd
-        self.select_first_contact_edit()
+        self.select_contact_edit_by_index(index)
         # edit contact
         self.change_contact_info(new_contact_data)
         # submit contact edition
         wd.find_element_by_xpath("//input[@value='Update']").click()
         self.app.return_to_home_page()
 
+
     def select_first_contact_edit(self):
+        self.select_contact_by_index(0)
+
+
+    def select_contact_edit_by_index(self, index):
         wd = self.app.wd
         # init contact edition of first edit link
-        wd.find_element_by_css_selector("img[src='icons/pencil.png']").click()
+        wd.find_elements_by_css_selector("img[src='icons/pencil.png']")[index].click()
 
     def change_field_value(self, field_name, text):
         wd = self.app.wd
