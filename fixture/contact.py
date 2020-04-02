@@ -1,5 +1,6 @@
 from selenium.webdriver.support.ui import Select
 from model.contact import Contact
+import re
 
 
 class ContactHelper:
@@ -25,8 +26,7 @@ class ContactHelper:
     def delete_first_contact(self):
         self.delete_contact_by_index(0)
 
-
-    def delete_contact_by_index(self,index):
+    def delete_contact_by_index(self, index):
         wd = self.app.wd
         # select first contact = click first checkbox
         self.open_contacts_page()
@@ -38,7 +38,6 @@ class ContactHelper:
         self.app.return_to_home_page()
 
         self.contact_cashe = None
-
 
     def open_contacts_page(self):
         wd = self.app.wd
@@ -67,7 +66,7 @@ class ContactHelper:
 
         self.change_field_value("title", contact.title)
         self.change_field_value("company", contact.company)
-        self.change_field_value("address", contact.work_address)
+        self.change_field_value("address", contact.address)
 
         # fill in phones of new contact
 
@@ -101,6 +100,7 @@ class ContactHelper:
         self.change_field_value("notes", contact.notes2)
 
         self.contact_cashe = None
+
     def edit_first_contact(self, new_contact_data):
         self.edit_contact_by_index(0)
 
@@ -113,15 +113,20 @@ class ContactHelper:
         wd.find_element_by_xpath("//input[@value='Update']").click()
         self.app.return_to_home_page()
 
-
     def select_first_contact_edit(self):
         self.select_contact_by_index(0)
 
-
     def select_contact_edit_by_index(self, index):
         wd = self.app.wd
+        self.app.return_to_home_page()
         # init contact edition of first edit link
         wd.find_elements_by_css_selector("img[src='icons/pencil.png']")[index].click()
+
+    def select_contact_view_by_index(self, index):
+        wd = self.app.wd
+        self.app.return_to_home_page()
+        # init contact view of first edit link
+        wd.find_elements_by_css_selector("img[src='icons/status_online.png']")[index].click()
 
     def change_field_value(self, field_name, text):
         wd = self.app.wd
@@ -143,21 +148,66 @@ class ContactHelper:
 
     contact_cashe = None
 
-
     def get_contact_list(self):
         if self.contact_cashe is None:
             wd = self.app.wd
             self.open_contacts_page()
             self.contact_cashe = []
 
-            inputs = wd.find_elements_by_css_selector("#maintable .center input")
-            first_names = wd.find_elements_by_css_selector("#maintable td:nth-child(3)")
-            last_names = wd.find_elements_by_css_selector("#maintable td:nth-child(2)")
+            for row in wd.find_elements_by_name("entry"):
+                cells = row.find_elements_by_tag_name("td")
+                id = cells[0].find_element_by_tag_name("input").get_attribute("value")
+                lastname = cells[1].text
+                firstname = cells[2].text
+                address = cells[3].text
+                all_emails = cells[4].text
+                all_phones = cells[5].text
 
-            for i in range(0,len(inputs)):
-                id = inputs[i].get_attribute("value")
-                first_name = first_names[i].text
-                last_name = last_names[i].text
-                self.contact_cashe.append(Contact(firstname = first_name, lastname = last_name, id = id))
+                self.contact_cashe.append(Contact(firstname=firstname, lastname=lastname, id=id, address=address,
+                                                  all_phones_from_home_page = all_phones,all_emails_from_home_page = all_emails))
+            # mine decision
+            # inputs = wd.find_elements_by_css_selector("#maintable .center input")
+            # first_names = wd.find_elements_by_css_selector("#maintable td:nth-child(3)")
+            # last_names = wd.find_elements_by_css_selector("#maintable td:nth-child(2)")
+            # for i in range(0, len(inputs)):
+            #     id = inputs[i].get_attribute("value")
+            #     first_name = first_names[i].text
+            #     last_name = last_names[i].text
+            #     self.contact_cashe.append(Contact(firstname=first_name, lastname=last_name, id=id))
 
         return list(self.contact_cashe)
+
+    def get_contact_info_from_edit_page(self, index):
+        wd = self.app.wd
+        self.select_contact_edit_by_index(index)
+
+        firstname = wd.find_element_by_name("firstname").get_attribute("value")
+        lastname = wd.find_element_by_name("lastname").get_attribute("value")
+        id = wd.find_element_by_name("id").get_attribute("value")
+
+        phone_home = wd.find_element_by_name("home").get_attribute("value")
+        phone_mobile = wd.find_element_by_name("mobile").get_attribute("value")
+        phone_work = wd.find_element_by_name("work").get_attribute("value")
+        phone2 = wd.find_element_by_name("phone2").get_attribute("value")
+
+        email1 = wd.find_element_by_name("email").get_attribute("value")
+        email2 = wd.find_element_by_name("email2").get_attribute("value")
+        email3 = wd.find_element_by_name("email3").get_attribute("value")
+
+        address = wd.find_element_by_name("address").text
+
+        return Contact(firstname=firstname, lastname=lastname, id=id, phone_home=phone_home, phone_mobile=phone_mobile,
+                         phone_work=phone_work, phone2=phone2, email1 = email1, email2 = email2, email3 = email3, address = address)
+
+    def get_contact_info_from_view_page(self, index):
+        wd = self.app.wd
+        self.select_contact_view_by_index(index)
+
+        text = wd.find_element_by_id("content").text
+        phone_home = re.search("H: (.*)", text).group(1)
+        phone_mobile = re.search("M: (.*)", text).group(1)
+        phone_work = re.search("W: (.*)", text).group(1)
+        phone2 = re.search("P: (.*)", text).group(1)
+
+        return Contact(phone_home=phone_home, phone_mobile=phone_mobile,
+                         phone_work=phone_work, phone2=phone2)
