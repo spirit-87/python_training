@@ -101,4 +101,4 @@ class GroupHelper:
                 text = element.text
                 id = element.find_element_by_name("selected[]").get_attribute("value")
                 self.group_cashe.append(Group(name = text, id = id))
-            return list(self.group_cashe)
+        return list(self.group_cashe)
