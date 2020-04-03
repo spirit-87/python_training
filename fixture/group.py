@@ -50,6 +50,8 @@ class GroupHelper:
     def delete_first_group(self):
         self.delete_group_by_index(0)
 
+        self.group_cashe = None
+
     def change_group_info(self, group):
         wd = self.app.wd
         # fill group form
@@ -66,6 +68,8 @@ class GroupHelper:
 
     def edit_first_group(self, new_group_data):
         self.edit_group_by_index(0, new_group_data)
+
+        self.group_cashe = None
 
 
     def edit_group_by_index(self, index, new_group_data):

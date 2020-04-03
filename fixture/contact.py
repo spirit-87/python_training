@@ -26,6 +26,8 @@ class ContactHelper:
     def delete_first_contact(self):
         self.delete_contact_by_index(0)
 
+        self.contact_cashe = None
+
     def delete_contact_by_index(self, index):
         wd = self.app.wd
         # select first contact = click first checkbox
@@ -112,6 +114,8 @@ class ContactHelper:
         # submit contact edition
         wd.find_element_by_xpath("//input[@value='Update']").click()
         self.app.return_to_home_page()
+
+        self.contact_cashe = None
 
     def select_first_contact_edit(self):
         self.select_contact_by_index(0)
