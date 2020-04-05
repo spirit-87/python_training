@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from model.contact import Contact
-import pytest
-from data.add_contact import constant as testdata
 
+#def test_add_contact(app, data_contacts): - если хотим грузить константные данные из заранее заготовленного файла
+#def test_add_contact(app, json_contacts): - если хотим грузить сгенерированные в отдельном файле данные
 
-
-@pytest.mark.parametrize("contact", testdata, ids=[repr(x) for x in testdata])
-def test_add_contact(app, contact):
+def test_add_contact(app, data_contacts):
+    contact = data_contacts
     old_contacts = app.contact.get_contact_list()
 
     app.contact.create(contact)

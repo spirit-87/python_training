@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 from model.group import Group
-from data.add_group import constant as testdata
-import pytest
+
 
 
 # Разделили тестовые данные и операции с ними
 # Добавили генерацию случайных данных
 # Добавили множ-во тестов со случ. данными
 
-@pytest.mark.parametrize("group", testdata, ids=[repr(x) for x in testdata])
-def test_add_group(app, group):
+
+#def test_add_group(app, data_groups): - если хотим грузить константные данные из заранее заготовленного файла
+#def test_add_group(app, json_groups): - если хотим грузить сгенерированные в отдельном файле данные
+def test_add_group(app, json_groups):
     #pass
+    group = json_groups
     old_groups = app.group.get_group_list()
     app.group.create(group)
     #для сравнения длин списков групп надо делать кучу обращений к браузера, а чтобы просто посчитать кол-во групп, надо
