@@ -202,7 +202,8 @@ class ContactHelper:
                 all_emails = cells[4].text
                 all_phones = cells[5].text
 
-                self.contact_cashe.append(Contact(firstname=firstname, lastname=lastname, id=id, address=address,
+                self.contact_cashe.append(Contact(firstname=self.clear_extra_spaces(firstname), lastname=self.clear_extra_spaces(lastname), id=id,
+                                                  address=self.clear_extra_spaces(address),
                                                   all_phones_from_home_page = all_phones,all_emails_from_home_page = all_emails))
             # mine decision
             # inputs = wd.find_elements_by_css_selector("#maintable .center input")
@@ -235,7 +236,6 @@ class ContactHelper:
 
         address = wd.find_element_by_name("address").text
 
-        contact_edit = []
         contact_edit = Contact(firstname=firstname, lastname=lastname, id=id, phone_home=phone_home, phone_mobile=phone_mobile,
                         phone_work=phone_work, phone2=phone2, email1 = email1, email2 = email2, email3 = email3, address = address)
         contact_edit.all_phones_from_home_page = self.merge_phones_like_on_home_page(contact_edit)
@@ -256,11 +256,12 @@ class ContactHelper:
                          phone_work=phone_work, phone2=phone2)
 
 
-    def clear(self, s):
-        return re.sub("[() -]", "", s)
 
     def clear_extra_spaces(self, s):
         return re.sub("  ", " ", s.strip())
+
+    def clear(self, s):
+        return re.sub("[() -]", "", s)
 
     def merge_phones_like_on_home_page(self, contact):
         #filter - удаляем элементы None, map - чистим контакты от лишних символов, filter - выбираем только не пустые значения
