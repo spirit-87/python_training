@@ -235,8 +235,12 @@ class ContactHelper:
 
         address = wd.find_element_by_name("address").text
 
-        return Contact(firstname=firstname, lastname=lastname, id=id, phone_home=phone_home, phone_mobile=phone_mobile,
-                         phone_work=phone_work, phone2=phone2, email1 = email1, email2 = email2, email3 = email3, address = address)
+        contact_edit = []
+        contact_edit = Contact(firstname=firstname, lastname=lastname, id=id, phone_home=phone_home, phone_mobile=phone_mobile,
+                        phone_work=phone_work, phone2=phone2, email1 = email1, email2 = email2, email3 = email3, address = address)
+        contact_edit.all_phones_from_home_page = self.merge_phones_like_on_home_page(contact_edit)
+        contact_edit.all_emails_from_home_page = self.merge_emails_like_on_home_page(contact_edit)
+        return contact_edit
 
     def get_contact_info_from_view_page(self, index):
         wd = self.app.wd
@@ -250,3 +254,24 @@ class ContactHelper:
 
         return Contact(phone_home=phone_home, phone_mobile=phone_mobile,
                          phone_work=phone_work, phone2=phone2)
+
+
+    def clear(self, s):
+        return re.sub("[() -]", "", s)
+
+    def clear_extra_spaces(self, s):
+        return re.sub("  ", " ", s.strip())
+
+    def merge_phones_like_on_home_page(self, contact):
+        #filter - удаляем элементы None, map - чистим контакты от лишних символов, filter - выбираем только не пустые значения
+        return "\n".join(filter(lambda x: x != "",
+                                map(lambda x: self.clear(x),
+                                    filter(lambda x: x is not None,
+                                           [contact.phone_home, contact.phone_mobile, contact.phone_work, contact.phone2]))))
+
+    def merge_emails_like_on_home_page(self, contact):
+    #filter - удаляем элементы None, map - чистим контакты от лишних символов, filter - выбираем только не пустые значения
+        return "\n".join(filter(lambda x: x != "",
+                                map(lambda x:self.clear(x),
+                                    filter(lambda x: x is not None,
+                                           [contact.email1, contact.email2, contact.email3]))))

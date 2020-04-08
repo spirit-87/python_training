@@ -133,5 +133,7 @@ class GroupHelper:
             for element in wd.find_elements_by_css_selector("span.group"):
                 text = element.text
                 id = element.find_element_by_name("selected[]").get_attribute("value")
+                header = element.text
+                footer = element.find_element_by_name("selected[]").get_attribute("value")
                 self.group_cashe.append(Group(name = text, id = id))
         return list(self.group_cashe)
