@@ -41,6 +41,19 @@ class ContactHelper:
 
         self.contact_cashe = None
 
+    def delete_contact_by_id(self, id):
+        wd = self.app.wd
+        # select first contact = click first checkbox
+        self.open_contacts_page()
+        self.select_contact_by_id(id)
+        # submit contact deletion
+        wd.find_element_by_css_selector("input[value='Delete']").click()
+        # accept dialog window
+        wd.switch_to_alert().accept()
+        self.app.return_to_home_page()
+
+        self.contact_cashe = None
+
     def open_contacts_page(self):
         wd = self.app.wd
         # select first group = click first checkbox
@@ -55,6 +68,11 @@ class ContactHelper:
         wd = self.app.wd
         # select first contact = click first checkbox
         wd.find_elements_by_name("selected[]")[index].click()
+
+    def select_contact_by_id(self, id):
+        wd = self.app.wd
+        # select first contact = click first checkbox
+        wd.find_element_by_css_selector("input[value='%s']" % id ).click()
 
     def change_contact_info(self, contact):
         wd = self.app.wd
@@ -117,6 +135,17 @@ class ContactHelper:
 
         self.contact_cashe = None
 
+    def edit_contact_by_id(self, id, new_contact_data):
+        wd = self.app.wd
+        self.select_contact_edit_by_id(id)
+        # edit contact
+        self.change_contact_info(new_contact_data)
+        # submit contact edition
+        wd.find_element_by_xpath("//input[@value='Update']").click()
+        self.app.return_to_home_page()
+
+        self.contact_cashe = None
+
     def select_first_contact_edit(self):
         self.select_contact_by_index(0)
 
@@ -125,6 +154,12 @@ class ContactHelper:
         self.app.return_to_home_page()
         # init contact edition of first edit link
         wd.find_elements_by_css_selector("img[src='icons/pencil.png']")[index].click()
+
+    def select_contact_edit_by_id(self, id):
+        wd = self.app.wd
+        self.app.return_to_home_page()
+        # init contact edition of first edit link
+        wd.find_element_by_css_selector("a[href='edit.php?id=%s']" % id).click()
 
     def select_contact_view_by_index(self, index):
         wd = self.app.wd

@@ -8,12 +8,9 @@ def test_edit_some_group(app, db):
         app.group.create(Group(name="test"))
 
     old_groups = db.get_group_list()
-    #index = randrange(len(old_groups))
     group_old = random.choice(old_groups)
     id = group_old.id
     group_new = Group(id = id, name="edit_Lenks", header="edit_Lenks", footer="edit_Lenknks")
-    #group.id = old_groups[index].id
-    #app.group.edit_group_by_index(index, group)
     app.group.edit_group_by_id(id, group_new)
     new_groups = db.get_group_list()
     # ищем в старом списке группу с рабочим id, которую надо обновить, и обновляем
