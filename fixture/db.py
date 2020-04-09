@@ -3,7 +3,7 @@ from model.group import Group
 from model.contact import Contact
 import re
 
-class DbFixture():
+class DbFixture:
     def __init__(self, host, name, user, password):
         self.host = host,
         self.name = name,

@@ -6,6 +6,7 @@ import os.path
 import importlib
 from fixture.application import Application
 from fixture.db import DbFixture
+from fixture.orm import ORMFixture
 
 fixture = None
 target = None
@@ -36,6 +37,7 @@ def db(request):
         dbfixture.destroy()
     request.addfinalizer(fin)
     return dbfixture
+
 
 @pytest.fixture
 def check_ui(request):
