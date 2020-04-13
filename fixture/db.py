@@ -51,19 +51,19 @@ class DbFixture:
         self.connection.close()
 
     def clear(self, s):
-        return re.sub("[() -]", "", s)
+        return re.sub("[()-]", "", s)
 
     def merge_phones_like_on_home_page(self, contact):
         #filter - удаляем элементы None, map - чистим контакты от лишних символов, filter - выбираем только не пустые значения
         return "\n".join(filter(lambda x: x != "",
-                                map(lambda x: self.clear(x),
+                                map(lambda x: self.clear(x).strip(),
                                     filter(lambda x: x is not None,
                                            [contact.phone_home, contact.phone_mobile, contact.phone_work, contact.phone2]))))
 
     def merge_emails_like_on_home_page(self, contact):
     #filter - удаляем элементы None, map - чистим контакты от лишних символов, filter - выбираем только не пустые значения
         return "\n".join(filter(lambda x: x != "",
-                                map(lambda x:self.clear(x),
+                                map(lambda x:self.clear(x).strip(),
                                     filter(lambda x: x is not None,
                                            [contact.email1, contact.email2, contact.email3]))))
 
