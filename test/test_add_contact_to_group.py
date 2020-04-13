@@ -10,6 +10,13 @@ def test_add_contact_to_group(app, db):
     groups = db.get_group_list()
     contacts = db.get_contact_list()
 
+    if len(groups) == 0:
+        app.group.create(Group(name="test_group"))
+        groups = db.get_group_list()
+    if len(contacts) == 0:
+        app.contact.create(Contact(firstname="test_firstname"))
+        contacts = db.get_contact_list()
+
     # проверка, пробегаемся по группам - ищем первый контакт из списка контактов, не принадлежищего заданной группе
     for g in range(len(groups)):
         contacts_not_in_group = orm.get_contacts_not_in_group(Group(id=str(groups[g].id)))
