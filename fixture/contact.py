@@ -294,4 +294,3 @@ class ContactHelper:
         self.app.return_to_home_page()
 
 
-

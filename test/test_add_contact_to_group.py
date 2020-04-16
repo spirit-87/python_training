@@ -6,31 +6,34 @@ import random
 orm = ORMFixture(host = "192.168.64.2",name = "addressbook", user = "root_elena", password="elenka")
 
 def test_add_contact_to_group(app, db):
-    # собираем списки групп и контактов из БД
+    # собираем списки групп и контактов из БД, если они пусты, добавляем группу и контакт
     groups = db.get_group_list()
     contacts = db.get_contact_list()
-
     if len(groups) == 0:
-        app.group.create(Group(name="test_group"))
-        groups = db.get_group_list()
+        app.group.create(Group(name="vacant_group"))
     if len(contacts) == 0:
-        app.contact.create(Contact(firstname="test_firstname"))
-        contacts = db.get_contact_list()
+        app.contact.create(Contact(firstname="vacant_contact"))
 
-    # проверка, пробегаемся по группам - ищем первый контакт из списка контактов, не принадлежищего заданной группе
-    for g in range(len(groups)):
-        contacts_not_in_group = orm.get_contacts_not_in_group(Group(id=str(groups[g].id)))
-        if len(contacts_not_in_group) != 0:
-            contact_is_real = contacts_not_in_group[0]
-            group_is_real = groups[g]
-            break
-    if len(contacts_not_in_group) == 0:
-        app.group.create(Group(name="test"))
-        groups = db.get_group_list()
-        group_is_real = groups[0]
-        app.contact.add_contact_to_group(contacts[0], group_is_real)
-        print("Контакт c id %s в группу с id %s успешно добавлен" % (contacts[0].id, group_is_real.id))
-    else:
-        app.contact.add_contact_to_group(contact_is_real, group_is_real)
-        print("Контакт c id %s в группу с id %s успешно добавлен" % (contact_is_real.id, group_is_real.id))
+    # собираем списки групп и контактов, отсутствующих в таблице связи групп и контактов через orm, если таковых нет, то создаем
+    old_vacant_contacts = orm.get_vacant_contacts()
+    old_vacant_groups = orm.get_vacant_groups()
 
+    if len(old_vacant_groups) == 0:
+        app.group.create(Group(name="vacant_group"))
+        old_vacant_groups = orm.get_vacant_groups()
+
+    if len(old_vacant_contacts) == 0:
+        app.contact.create(Contact(firstname="vacant_contact"))
+        old_vacant_contacts = orm.get_vacant_contacts()
+
+    # добавляем первый свободный контакт в первую свободную группу
+    app.contact.add_contact_to_group(old_vacant_contacts[0], old_vacant_groups[0])
+    print("Контакт c id %s в группу с id %s успешно добавлен" % (old_vacant_contacts[0], old_vacant_groups[0]))
+
+    # собираем списки групп и контактов, отсутствующих в таблице связи групп и контактов через orm, после добавления
+    new_vacant_contacts = orm.get_vacant_contacts()
+    new_vacant_groups = orm.get_vacant_groups()
+
+    # проверяем, что список вакантных групп и контактов изменился на 1
+    assert len(old_vacant_contacts) == len(new_vacant_contacts) +1
+    assert len(old_vacant_groups) == len(new_vacant_groups) +1

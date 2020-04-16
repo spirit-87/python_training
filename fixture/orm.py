@@ -43,24 +43,47 @@ class ORMFixture:
     def get_group_list(self):
         return self.convert_groups_to_model(select (g for g in ORMFixture.ORMGroup))
 
-        # формируется список объектов класса групп
-    def convert_contact_to_model(self, contacts):
+
+        # формируется список объектов класса контактов
+    def convert_contacts_to_model(self, contacts):
         def convert(contact):
             return Contact(id = str(contact.id), firstname = contact.firstname, lastname = contact.lastname)
         return list(map(convert, contacts))
 
     @db_session
     def get_contact_list(self):
-        return self.convert_contact_to_model(select (c for c in ORMFixture.ORMContact))
+        return self.convert_contacts_to_model(select (c for c in ORMFixture.ORMContact))
 
     @db_session
     def get_contacts_in_group(self, group):
         orm_group = list(select (g for g in ORMFixture.ORMGroup if g.id == group.id))[0]
-        return self.convert_contact_to_model(orm_group.contacts)
+        return self.convert_contacts_to_model(orm_group.contacts)
 
     @db_session
     def get_contacts_not_in_group(self, group):
         orm_group = list(select (g for g in ORMFixture.ORMGroup if g.id == group.id))[0]
-        return self.convert_contact_to_model(
+        return self.convert_contacts_to_model(
             select(c for c in ORMFixture.ORMContact if orm_group not in c.groups))
+
+    @db_session
+    def get_vacant_contacts(self):
+        return self.convert_contacts_to_model(
+            select(c for c in ORMFixture.ORMContact if count(c.groups) == 0))
+
+    @db_session
+    def get_vacant_groups(self):
+        return self.convert_groups_to_model(
+            select(g for g in ORMFixture.ORMGroup if count(g.contacts) == 0))
+
+    @db_session
+    def get_dealed_contacts(self):
+        return self.convert_contacts_to_model(
+            select(c for c in ORMFixture.ORMContact if count(c.groups) != 0))
+
+    @db_session
+    def get_groups_of_contact(self, contact):
+        orm_contact = list(select (c for c in ORMFixture.ORMContact if c.id == contact.id))[0]
+        return self.convert_groups_to_model(orm_contact.groups)
+
+
 
