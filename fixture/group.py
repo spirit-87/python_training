@@ -1,4 +1,5 @@
 from model.group import Group
+import re
 
 class GroupHelper:
 
@@ -137,3 +138,9 @@ class GroupHelper:
                 footer = element.find_element_by_name("selected[]").get_attribute("value")
                 self.group_cashe.append(Group(name = text, id = id))
         return list(self.group_cashe)
+
+    def clear_extra_spaces(self, s):
+        return re.sub("  ", " ", s.strip())
+
+    def clear(self, s):
+        return re.sub("[() -]", "", s)
