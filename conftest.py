@@ -16,7 +16,6 @@ def load_config(file):
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), file)
         with open(config_file) as f:
             target = json.load(f)
-
     return target
 
 @pytest.fixture
@@ -38,7 +37,6 @@ def db(request):
     request.addfinalizer(fin)
     return dbfixture
 
-
 @pytest.fixture
 def check_ui(request):
     return request.config.getoption("--check_ui")
@@ -53,7 +51,7 @@ def stop(request):
     return fixture
 
 def pytest_addoption(parser):
-    parser.addoption("--browser", action = "store", default = "chrome")
+    parser.addoption("--browser", action = "store", default = "firefox")
     parser.addoption("--target", action = "store", default = "target.json")
     parser.addoption("--check_ui", action = "store_true")
 
